@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Iniciar Sesión - Hospital Dashboard</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body class="bg-gray-100 flex items-center justify-center h-screen">
+
+    <div class="w-full max-w-md bg-white p-8 rounded-xl shadow-lg">
+        <div class="text-center mb-8">
+            <img src="https://th.bing.com/th/id/OIP._0ZqxGqmntFwJM-PBN8W2gAAAA?rs=1&pid=ImgDetMain" alt="Logo Hospital Universitario Hernando Moncaleano Perdomo" class="mx-auto h-20 w-auto mb-6">
+            <h1 class="text-2xl font-bold text-gray-900">Hospital Universitario</h1>
+            <p class="text-gray-600">Inicio de Sesión</p>
+        </div>
+        <form id="login-form">
+            <div class="mb-4">
+                <label for="username" class="block text-sm font-medium text-gray-700 mb-1">Usuario</label>
+                <input type="text" id="username" name="username" class="w-full py-2 px-3 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500" required>
+            </div>
+            <div class="mb-6">
+                <label for="password" class="block text-sm font-medium text-gray-700 mb-1">Contraseña</label>
+                <input type="password" id="password" name="password" class="w-full py-2 px-3 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500" required>
+            </div>
+            <button type="submit" class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-2 px-4 rounded-lg transition-colors duration-300">
+                Ingresar
+            </button>
+            <p id="error-message" class="text-red-500 text-sm mt-4 text-center hidden">Usuario o contraseña incorrectos.</p>
+        </form>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const loginForm = document.getElementById('login-form');
+            const errorMessage = document.getElementById('error-message');
+
+            loginForm.addEventListener('submit', async (e) => {
+                e.preventDefault();
+                errorMessage.classList.add('hidden');
+
+                const username = document.getElementById('username').value;
+                const password = document.getElementById('password').value;
+
+                try {
+                    const response = await fetch('./api/login_handler.php', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({ username: username, password: password })
+                    });
+
+                    const result = await response.json();
+
+                    if (result.success) {
+                        // Redirección corregida
+                        window.location.href = 'portal.php';
+                    } else {
+                        errorMessage.textContent = result.message || 'Usuario o contraseña incorrectos.';
+                        errorMessage.classList.remove('hidden');
+                    }
+                } catch (error) {
+                    console.error('Error en el login:', error);
+                    errorMessage.textContent = 'Error de conexión con el servidor.';
+                    errorMessage.classList.remove('hidden');
+                }
+            });
+        });
+    </script>
+</body>
+</html>
